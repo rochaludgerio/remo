@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ludgerio Rocha | Portal de Protocolos Técnicos</title>
+<style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f4f6f9; color: #333; }
+    header { background:#0B3C49; color:white; text-align:center; padding:50px 20px; }
+    nav { background:#08313b; text-align:center; padding:15px; }
+    nav a { color:white; text-decoration:none; margin:0 20px; font-weight:bold; }
+    .container { width:90%; max-width:1100px; margin:40px auto; }
+    .card { background:white; padding:30px; margin-bottom:25px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.08); transition: 0.3s; }
+    .card:hover { transform: translateY(-3px); }
+    
+    .controles { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+    .campo { display: flex; flex-direction: column; }
+    input { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; margin-top: 5px; }
+
+    .gestante-toggle { display: flex; align-items: center; gap: 10px; background: #e2e8f0; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+    .gestante-toggle input { width: 18px; height: 18px; margin: 0; }
+
+    .grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+    .item-vacina { background: #f9f9f9; padding: 12px; border-radius: 10px; border-left: 5px solid #0B3C49; display: flex; align-items: flex-start; font-size: 13px; }
+    .item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.2; cursor: pointer; }
+    .tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; line-height: 1.4; }
+    
+    .status-box { margin-top: 25px; padding: 15px; border-radius: 10px; }
+    .atrasada { color: #d9534f; background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
+    .reforco-info { color: #08313b; background: #e7f3f5; border: 1px solid #0B3C49; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
+    .em-dia { color: #28a745; background: #f0fff4; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; }
+    
+    button { background:#0B3C49; color:white; padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-weight: bold; }
+    footer { background:#0B3C49; color:white; text-align:center; padding:20px; margin-top:40px; }
+
+    #campoDT { display: none; } 
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Ludgerio Rocha</h1>
+    <p>Portal de Protocolos Técnicos em Enfermagem</p>
+</header>
+
+<nav>
+    <a href="#">Início</a> <a href="#">Protocolos</a> <a href="#">Intranet</a>
+</nav>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Apresentação</h2>
+        <p>Portal criado para compartilhar protocolos técnicos e padronizações assistenciais de enfermagem.</p>
+    </div>
+
+    <div class="card">
+        <h3>Calculadora de Calendário Vacinal Inteligente</h3>
+        <div class="controles">
+            <div class="campo">
+                <label>Data de Nascimento:</label>
+                <input type="date" id="dataNasc" onchange="gerarLista()">
+            </div>
+            
+            <label class="gestante-toggle">
+                <input type="checkbox" id="isGestante" onchange="gerarLista()"> 🤰 Gestante
+            </label>
+
+            <div class="campo" id="campoDT">
+                <label>Ano da última dose dT/DTP:</label>
+                <input type="number" id="anoUltimaDT" placeholder="Ex: 2020" oninput="validar()">
+            </div>
+        </div>
+
+        <div id="painelVacinas" style="display:none;">
+            <hr>
+            <p><strong>Doses Disponíveis para a Idade:</strong></p>
+            <div id="listaVacinas" class="grid-vacinas"></div>
+            <div id="resultadoStatus" class="status-box"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Urgência e Emergência</h3>
+        <p>Protocolos padronizados e fluxogramas de decisão.</p>
+        <button>Acessar</button>
+    </div>
+
+    <div class="card">
+        <h3>Administração de Medicamentos</h3>
+        <p>Preparo, diluição e segurança do paciente.</p>
+        <button>Acessar</button>
+    </div>
+
+</div>
+
+<footer>© 2026 Ludgerio Rocha | Portal de Protocolos Técnicos</footer>
+
+<script>
+const baseVacinas = [
+    { m: 0, n: "BCG", d: "0,1 ml", v: "ID", lim: 180, obs: "Até 14a 11m 29d." },
+    { m: 0, n: "Hepatite B (Nascer)", d: "0,5 ml", v: "IM", lim: 1, obs: "Nas primeiras 24h." },
+    { m: 2, n: "Penta", d: "0,5 ml", v: "IM", lim: 83, obs: "Até 6a 11m 29d." },
+    { m: 2, n: "VIP - Pólio", d: "0,5 ml", v: "IM", lim: 228, obs: "Até 18a 11m 29d." },
+    { m: 15, n: "DTP (Infantil)", d: "0,5 ml", v: "IM", lim: 83, obs: "Limite: 6 anos, 11 meses e 29 dias." },
+    { m: 84, n: "dT (Duplo Adulto)", d: "0,5 ml", v: "IM", lim: null, obs: "Uso a partir dos 7 anos (resgate ou reforço)." },
+    { m: 12, n: "Tríplice Viral (SCR)", d: "0,5 ml", v: "SC", lim: 719, obs: "Até 59 anos." },
+    { m: 108, n: "HPV Quadrivalente", d: "0,5 ml", v: "IM", lim: 180, obs: "9 a 14 anos." },
+    { m: 132, n: "Hepatite B (Adulto)", d: "1,0 ml", v: "IM", lim: null, obs: "3 doses." },
+    { m: 0, n: "dTpa (Gestante)", d: "0,5 ml", v: "IM", lim: null, obs: "A partir da 20ª semana.", apenasGestante: true }
+];
+
+function calcularIdadeAnos(data) {
+    const hoje = new Date();
+    const nasc = new Date(data);
+    let anos = hoje.getFullYear() - nasc.getFullYear();
+    if (hoje.getMonth() < nasc.getMonth() || (hoje.getMonth() === nasc.getMonth() && hoje.getDate() < nasc.getDate())) anos--;
+    return anos;
+}
+
+function calcularIdadeMeses(data) {
+    const hoje = new Date();
+    const nasc = new Date(data);
+    return (hoje.getFullYear() - nasc.getFullYear()) * 12 + (hoje.getMonth() - nasc.getMonth());
+}
+
+function gerarLista() {
+    const dataVal = document.getElementById('dataNasc').value;
+    const isGestante = document.getElementById('isGestante').checked;
+    if(!dataVal) return;
+
+    const idadeAnos = calcularIdadeAnos(dataVal);
+    const idadeMeses = calcularIdadeMeses(dataVal);
+    
+    // Mostra calculadora de reforço a partir dos 7 anos
+    document.getElementById('campoDT').style.display = (idadeAnos >= 7) ? 'flex' : 'none';
+    document.getElementById('painelVacinas').style.display = 'block';
+    
+    const container = document.getElementById('listaVacinas');
+    container.innerHTML = "";
+
+    baseVacinas.forEach((vac, i) => {
+        const noPrazo = vac.lim ? (idadeMeses <= vac.lim) : true;
+        const idadeMinima = vac.apenasGestante ? isGestante : (idadeMeses >= vac.m);
+
+        if (idadeMinima && noPrazo) {
+            container.innerHTML += `
+                <div class="item-vacina">
+                    <input type="checkbox" id="v${i}" onchange="validar()">
+                    <div>
+                        <strong>${vac.n}</strong>
+                        <span class="tecnico">Dose: ${vac.d} | Via: ${vac.v}<br>${vac.obs}</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    validar();
+}
+
+function validar() {
+    const dataVal = document.getElementById('dataNasc').value;
+    if(!dataVal) return;
+
+    const idadeAnos = calcularIdadeAnos(dataVal);
+    const anoUltimaDT = parseInt(document.getElementById('anoUltimaDT').value);
+    const isGestante = document.getElementById('isGestante').checked;
+    const box = document.getElementById('resultadoStatus');
+    const anoAtual = new Date().getFullYear();
+    
+    let html = `<h4>Paciente com ${idadeAnos} anos</h4>`;
+
+    if (idadeAnos >= 7) {
+        if (anoUltimaDT) {
+            const dif = anoAtual - anoUltimaDT;
+            if (dif >= 10) html += `<div class="atrasada">⚠️ <b>Reforço Vencido:</b> Fazem ${dif} anos da última dose. Aplicar dT agora.</div>`;
+            else if (isGestante && dif >= 5) html += `<div class="atrasada">🤰 <b>Gestante:</b> Antecipar reforço dT (última dose há ${dif} anos).</div>`;
+            else html += `<div class="reforco-info">📅 <b>Próximo Reforço:</b> Em ${anoUltimaDT + 10}.</div>`;
+        } else {
+            html += `<div class="atrasada">⚠️ <b>Duplo Adulto (dT):</b> Sem histórico. Iniciar esquema de 3 doses.</div>`;
+        }
+    }
+
+    let pendentes = [];
+    const checkboxes = document.querySelectorAll('.grid-vacinas input[type="checkbox"]');
+    checkboxes.forEach(chk => {
+        if (!chk.checked) {
+            const nomeVac = chk.nextElementSibling.querySelector('strong').innerText;
+            pendentes.push(nomeVac);
+        }
+    });
+
+    if(pendentes.length) html += `<div class="atrasada">📋 <b>Vacinas Pendentes:</b> ${pendentes.join(', ')}</div>`;
+    else html += `<div class="em-dia">✅ Esquema vacinal em dia para esta idade.</div>`;
+    
+    box.innerHTML = html;
+}
+</script>
+</body>
+</html>
