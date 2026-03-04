@@ -4,111 +4,155 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ludgerio Rocha | Portal de Protocolos Técnicos</title>
+
 <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#f4f6f9; color: #333; scroll-behavior: smooth; }
-    header { background:#0B3C49; color:white; text-align:center; padding:50px 20px; }
-    
-    /* Menu Fixo */
-    nav { background:#08313b; text-align:center; padding:15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-    nav a { color:white; text-decoration:none; margin:0 20px; font-weight:bold; cursor: pointer; transition: 0.3s; }
-    nav a:hover { color: #4fd1c5; }
-    
-    .container { width:90%; max-width:1100px; margin:40px auto; }
-    .card { background:white; padding:30px; margin-bottom:25px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.08); transition: 0.3s; }
-    .card:hover { transform: translateY(-3px); }
-    
-    .controles { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
-    .campo { display: flex; flex-direction: column; }
-    input { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; margin-top: 5px; }
+body { margin:0; font-family: Arial; background:#f4f6f9; scroll-behavior: smooth; }
 
-    .gestante-toggle { display: flex; align-items: center; gap: 10px; background: #e2e8f0; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
-    .gestante-toggle input { width: 18px; height: 18px; margin: 0; }
+header {
+    background:#0B3C49;
+    color:white;
+    text-align:center;
+    padding:50px 20px;
+}
 
-    .grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
-    .item-vacina { background: #f9f9f9; padding: 12px; border-radius: 10px; border-left: 5px solid #0B3C49; display: flex; align-items: flex-start; font-size: 13px; }
-    .item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.2; cursor: pointer; }
-    .tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; line-height: 1.4; }
-    
-    .status-box { margin-top: 25px; padding: 15px; border-radius: 10px; }
-    .atrasada { color: #d9534f; background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
-    .reforco-info { color: #08313b; background: #e7f3f5; border: 1px solid #0B3C49; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
-    .em-dia { color: #28a745; background: #f0fff4; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; }
-    
-    button { background:#0B3C49; color:white; padding:12px 20px; border:none; border-radius:8px; cursor:pointer; font-weight: bold; transition: 0.2s; }
-    button:hover { background: #135b6e; }
-    footer { background:#0B3C49; color:white; text-align:center; padding:20px; margin-top:40px; }
+nav {
+    background:#08313b;
+    text-align:center;
+    padding:15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-    #campoDT { display: none; } 
-    .section-title { border-bottom: 2px solid #0B3C49; padding-bottom: 10px; margin-bottom: 20px; color: #0B3C49; }
+nav a {
+    color:white;
+    text-decoration:none;
+    margin:0 20px;
+    font-weight:bold;
+}
+
+nav a:hover { text-decoration:underline; }
+
+.container {
+    width:90%;
+    max-width:1100px;
+    margin:40px auto;
+}
+
+.card {
+    background:white;
+    padding:30px;
+    margin-bottom:25px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.card:hover { transform:translateY(-5px); }
+
+/* Estilos Específicos da Calculadora */
+.controles { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+.campo { display: flex; flex-direction: column; }
+input { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; margin-top: 5px; }
+.gestante-toggle { display: flex; align-items: center; gap: 10px; background: #e2e8f0; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+.gestante-toggle input { width: 18px; height: 18px; margin: 0; }
+.grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+.item-vacina { background: #f9f9f9; padding: 12px; border-radius: 10px; border-left: 5px solid #0B3C49; display: flex; align-items: flex-start; font-size: 13px; }
+.item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.2; cursor: pointer; }
+.tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; line-height: 1.4; }
+.status-box { margin-top: 25px; padding: 15px; border-radius: 10px; }
+.atrasada { color: #d9534f; background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
+.reforco-info { color: #08313b; background: #e7f3f5; border: 1px solid #0B3C49; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
+.em-dia { color: #28a745; background: #f0fff4; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; }
+#campoDT { display: none; }
+
+button {
+    background:#0B3C49;
+    color:white;
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+footer {
+    background:#0B3C49;
+    color:white;
+    text-align:center;
+    padding:20px;
+    margin-top:40px;
+}
 </style>
 </head>
+
 <body>
 
 <header>
-    <h1>Ludgerio Rocha</h1>
-    <p>Portal de Protocolos Técnicos em Enfermagem</p>
+<h1>Ludgerio Rocha</h1>
+<p>Portal de Protocolos Técnicos em Enfermagem</p>
 </header>
 
 <nav>
-    <a href="#">Início</a> 
-    <a href="#sessaoProtocolos">Protocolos</a> 
-    <a href="#sessaoIntranet">Intranet</a>
+<a href="index.html">Início</a>
+<a href="protocolos.html">Protocolos</a>
+<a href="intranet/login.html">Intranet</a>
 </nav>
 
 <div class="container">
 
-    <div class="card">
-        <h2>Apresentação</h2>
-        <p>Portal criado para compartilhar protocolos técnicos e padronizações assistenciais de enfermagem.</p>
-    </div>
+<div class="card">
+<h2>Apresentação</h2>
+<p>
+Portal criado para compartilhar protocolos técnicos, padronizações assistenciais
+e materiais voltados à prática segura em enfermagem.
+</p>
+</div>
 
-    <div id="sessaoProtocolos" class="card">
-        <h3 class="section-title">Calculadora de Calendário Vacinal Inteligente</h3>
-        <div class="controles">
-            <div class="campo">
-                <label>Data de Nascimento:</label>
-                <input type="date" id="dataNasc" onchange="gerarLista()">
-            </div>
-            
-            <label class="gestante-toggle">
-                <input type="checkbox" id="isGestante" onchange="gerarLista()"> 🤰 Gestante
-            </label>
-
-            <div class="campo" id="campoDT">
-                <label>Ano da última dose dT/DTP:</label>
-                <input type="number" id="anoUltimaDT" placeholder="Ex: 2020" oninput="validar()">
-            </div>
+<div class="card" id="calculadora">
+    <h3>Calculadora de Calendário Vacinal Inteligente</h3>
+    <div class="controles">
+        <div class="campo">
+            <label>Data de Nascimento:</label>
+            <input type="date" id="dataNasc" onchange="gerarLista()">
         </div>
+        
+        <label class="gestante-toggle">
+            <input type="checkbox" id="isGestante" onchange="gerarLista()"> 🤰 Gestante
+        </label>
 
-        <div id="painelVacinas" style="display:none;">
-            <hr>
-            <p><strong>Doses Disponíveis para a Idade:</strong></p>
-            <div id="listaVacinas" class="grid-vacinas"></div>
-            <div id="resultadoStatus" class="status-box"></div>
+        <div class="campo" id="campoDT">
+            <label>Ano da última dose dT/DTP:</label>
+            <input type="number" id="anoUltimaDT" placeholder="Ex: 2020" oninput="validar()">
         </div>
     </div>
 
-    <div id="sessaoIntranet">
-        <div class="card">
-            <h3 class="section-title">Módulos da Intranet</h3>
-            <p>Acesse abaixo os protocolos institucionais e guias de conduta.</p>
-            <br>
-            <h4>Urgência e Emergência</h4>
-            <p>Protocolos padronizados e fluxogramas de decisão.</p>
-            <button onclick="alert('Acedendo ao Módulo de Urgência...')">Acessar Protocolos</button>
-            <hr>
-            <h4>Administração de Medicamentos</h4>
-            <p>Cálculos, diluições e segurança do paciente.</p>
-            <button onclick="alert('Acedendo ao Módulo de Medicação...')">Acessar Módulo</button>
-        </div>
+    <div id="painelVacinas" style="display:none;">
+        <hr>
+        <p><strong>Doses Disponíveis para a Idade:</strong></p>
+        <div id="listaVacinas" class="grid-vacinas"></div>
+        <div id="resultadoStatus" class="status-box"></div>
     </div>
+</div>
+
+<div class="card">
+<h3>Urgência e Emergência</h3>
+<p>Protocolos padronizados de atendimento inicial.</p>
+<button onclick="window.location.href='protocolos.html'">Acessar</button>
+</div>
+
+<div class="card">
+<h3>Administração de Medicamentos</h3>
+<p>Preparo, diluição e segurança do paciente.</p>
+<button onclick="window.location.href='protocolos.html'">Acessar</button>
+</div>
 
 </div>
 
-<footer>© 2026 Ludgerio Rocha | Portal de Protocolos Técnicos</footer>
+<footer>
+© 2026 Ludgerio Rocha | Portal de Protocolos Técnicos
+</footer>
 
 <script>
-// Base de dados das vacinas
 const baseVacinas = [
     { m: 0, n: "BCG", d: "0,1 ml", v: "ID", lim: 180, obs: "Até 14a 11m 29d." },
     { m: 0, n: "Hepatite B (Nascer)", d: "0,5 ml", v: "IM", lim: 1, obs: "Nas primeiras 24h." },
@@ -207,5 +251,6 @@ function validar() {
     box.innerHTML = html;
 }
 </script>
+
 </body>
 </html>
