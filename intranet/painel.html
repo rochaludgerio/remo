@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel da Intranet</title>
+
+<script>
+if(localStorage.getItem("logado") !== "true"){
+    window.location.href = "login.html";
+}
+
+function logout(){
+    localStorage.removeItem("logado");
+    localStorage.removeItem("usuario");
+    window.location.href = "login.html";
+}
+</script>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+background:#f4f6f9;
+}
+
+header{
+background:#0B3C49;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+.container{
+width:90%;
+max-width:1000px;
+margin:40px auto;
+}
+
+.card{
+background:white;
+padding:25px;
+margin-bottom:20px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+button{
+padding:10px 15px;
+background:#0B3C49;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Painel da Intranet</h1>
+<p id="usuarioLogado"></p>
+<button onclick="logout()">Sair</button>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Prontuário do Paciente</h3>
+<p>Registrar atendimento e evolução.</p>
+<button onclick="window.location.href='prontuario.html'">
+Acessar Prontuário
+</button>
+</div>
+
+<div class="card">
+<h3>Protocolos Exclusivos</h3>
+<p>Versão completa com fluxogramas internos.</p>
+<button>Baixar</button>
+</div>
+
+</div>
+
+<script>
+document.getElementById("usuarioLogado").innerText =
+"Usuário logado: " + localStorage.getItem("usuario");
+</script>
+
+</body>
+</html>
