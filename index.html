@@ -48,43 +48,21 @@ nav a:hover { text-decoration:underline; }
     transition:0.3s;
 }
 
-.card:hover { transform:translateY(-5px); }
-
-/* Estilos da Calculadora Acumulativa */
+/* Estilos da Calculadora */
 .controles { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
 .campo { display: flex; flex-direction: column; }
 input { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; margin-top: 5px; }
-.gestante-toggle { display: flex; align-items: center; gap: 10px; background: #e2e8f0; padding: 10px 15px; border-radius: 50px; cursor: pointer; font-weight: bold; }
-.gestante-toggle input { width: 18px; height: 18px; margin: 0; }
 
-.grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+.grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
 .item-vacina { background: #f9f9f9; padding: 12px; border-radius: 10px; border-left: 5px solid #0B3C49; display: flex; align-items: flex-start; font-size: 13px; }
-.item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.2; cursor: pointer; }
-.tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; line-height: 1.4; }
+.item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.3; cursor: pointer; }
+.tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; }
 
 .status-box { margin-top: 25px; padding: 15px; border-radius: 10px; }
 .atrasada { color: #d9534f; background: #fff5f5; border: 1px solid #feb2b2; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
-.reforco-info { color: #08313b; background: #e7f3f5; border: 1px solid #0B3C49; padding: 10px; border-radius: 5px; margin-bottom: 8px; }
 .em-dia { color: #28a745; background: #f0fff4; border: 1px solid #c3e6cb; padding: 10px; border-radius: 5px; }
 
-#campoDT { display: none; }
-
-button {
-    background:#0B3C49;
-    color:white;
-    padding:12px 20px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-}
-
-footer {
-    background:#0B3C49;
-    color:white;
-    text-align:center;
-    padding:20px;
-    margin-top:40px;
-}
+footer { background:#0B3C49; color:white; text-align:center; padding:20px; margin-top:40px; }
 </style>
 </head>
 
@@ -104,47 +82,22 @@ footer {
 <div class="container">
 
 <div class="card">
-<h2>Apresentação</h2>
-<p>Portal criado para compartilhar protocolos técnicos, padronizações assistenciais e materiais voltados à prática segura em enfermagem.</p>
-</div>
-
-<div class="card" id="calculadora">
-    <h3>Calculadora Vacinal: Histórico e Pendências</h3>
-    <p><small>O sistema lista todas as doses recomendadas do nascimento até a idade atual.</small></p>
+    <h3>Calculadora Vacinal Acumulativa</h3>
+    <p>Insira a data de nascimento para verificar todas as doses que o paciente já deveria ter tomado.</p>
+    
     <div class="controles">
         <div class="campo">
-            <label>Data de Nascimento:</label>
+            <label>Data de Nascimento do Paciente:</label>
             <input type="date" id="dataNasc" onchange="gerarLista()">
-        </div>
-        
-        <label class="gestante-toggle">
-            <input type="checkbox" id="isGestante" onchange="gerarLista()"> 🤰 Gestante
-        </label>
-
-        <div class="campo" id="campoDT">
-            <label>Ano da última dose dT/DTP:</label>
-            <input type="number" id="anoUltimaDT" placeholder="Ex: 2020" oninput="validar()">
         </div>
     </div>
 
     <div id="painelVacinas" style="display:none;">
         <hr>
-        <p><strong>Checklist de Vacinação (Marque as que JÁ FORAM aplicadas):</strong></p>
+        <p><strong>Doses Recomendadas até o momento:</strong></p>
         <div id="listaVacinas" class="grid-vacinas"></div>
         <div id="resultadoStatus" class="status-box"></div>
     </div>
-</div>
-
-<div class="card">
-<h3>Urgência e Emergência</h3>
-<p>Protocolos padronizados de atendimento inicial.</p>
-<button onclick="window.location.href='protocolos.html'">Acessar</button>
-</div>
-
-<div class="card">
-<h3>Administração de Medicamentos</h3>
-<p>Preparo, diluição e segurança do paciente.</p>
-<button onclick="window.location.href='protocolos.html'">Acessar</button>
 </div>
 
 </div>
@@ -152,71 +105,55 @@ footer {
 <footer>© 2026 Ludgerio Rocha | Portal de Protocolos Técnicos</footer>
 
 <script>
-// Base de dados expandida para refletir doses acumulativas
+// Base de dados com foco em doses iniciais e acumulativas
 const baseVacinas = [
-    { m: 0, n: "BCG", d: "0,1 ml", v: "ID", lim: 180, obs: "Dose única." },
-    { m: 0, n: "Hepatite B (Nascer)", d: "0,5 ml", v: "IM", lim: 1, obs: "Aplicar nas primeiras 24h." },
-    { m: 2, n: "Penta (1ª dose)", d: "0,5 ml", v: "IM", lim: 83, obs: "DTP/HB/Hib" },
-    { m: 2, n: "VIP (1ª dose)", d: "0,5 ml", v: "IM", lim: 228, obs: "Poliomielite Inativada" },
-    { m: 2, n: "Pneumo 10 (1ª dose)", d: "0,5 ml", v: "IM", lim: 59, obs: "Proteção pneumocócica" },
-    { m: 2, n: "Rotavírus (1ª dose)", d: "1,5 ml", v: "VO", lim: 3.5, obs: "Limite rígido de idade." },
-    { m: 3, n: "Meningo C (1ª dose)", d: "0,5 ml", v: "IM", lim: 59, obs: "Meningocócica C" },
-    { m: 4, n: "Penta (2ª dose)", d: "0,5 ml", v: "IM", lim: 83, obs: "DTP/HB/Hib" },
-    { m: 4, n: "VIP (2ª dose)", d: "0,5 ml", v: "IM", lim: 228, obs: "Poliomielite Inativada" },
-    { m: 4, n: "Pneumo 10 (2ª dose)", d: "0,5 ml", v: "IM", lim: 59, obs: "Proteção pneumocócica" },
-    { m: 4, n: "Rotavírus (2ª dose)", d: "1,5 ml", v: "VO", lim: 7.9, obs: "Limite rígido de idade." },
-    { m: 5, n: "Meningo C (2ª dose)", d: "0,5 ml", v: "IM", lim: 59, obs: "Meningocócica C" },
-    { m: 6, n: "Penta (3ª dose)", d: "0,5 ml", v: "IM", lim: 83, obs: "DTP/HB/Hib" },
-    { m: 6, n: "VIP (3ª dose)", d: "0,5 ml", v: "IM", lim: 228, obs: "Poliomielite Inativada" },
-    { m: 9, n: "Febre Amarela (1ª dose)", d: "0,5 ml", v: "SC", lim: null, obs: "Conforme área de indicação." },
-    { m: 12, n: "Tríplice Viral (1ª dose)", d: "0,5 ml", v: "SC", lim: 719, obs: "SCR - Sarampo/Caxumba/Rubéola" },
-    { m: 12, n: "Pneumo 10 (Reforço)", d: "0,5 ml", v: "IM", lim: 59, obs: "" },
-    { m: 12, n: "Meningo C (Reforço)", d: "0,5 ml", v: "IM", lim: 59, obs: "" },
-    { m: 15, n: "DTP (1º Reforço)", d: "0,5 ml", v: "IM", lim: 83, obs: "Até 6a 11m 29d." },
-    { m: 15, n: "VOP (Reforço)", d: "2 gotas", v: "VO", lim: 59, obs: "Pólio Oral" },
-    { m: 15, n: "Hepatite A", d: "0,5 ml", v: "IM", lim: 59, obs: "Dose única." },
-    { m: 15, n: "Tetra Viral", d: "0,5 ml", v: "SC", lim: 59, obs: "SCR + Varicela" },
-    { m: 48, n: "DTP (2º Reforço)", d: "0,5 ml", v: "IM", lim: 83, obs: "Aos 4 anos." },
-    { m: 48, n: "VOP (2º Reforço)", d: "2 gotas", v: "VO", lim: 59, obs: "Aos 4 anos." },
-    { m: 48, n: "Varicela (2ª dose)", d: "0,5 ml", v: "SC", lim: 59, obs: "Aos 4 anos." },
-    { m: 84, n: "dT (Duplo Adulto)", d: "0,5 ml", v: "IM", lim: null, obs: "Resgate ou reforço a cada 10 anos." },
-    { m: 108, n: "HPV Quadrivalente", d: "0,5 ml", v: "IM", lim: 180, obs: "Meninos e Meninas (9-14 anos)." },
-    { m: 0, n: "dTpa (Gestante)", d: "0,5 ml", v: "IM", lim: null, obs: "A partir da 20ª semana.", apenasGestante: true }
+    { m: 0, n: "BCG", d: "0,1 ml", v: "ID", obs: "Dose única ao nascer." },
+    { m: 0, n: "Hepatite B (Nascer)", d: "0,5 ml", v: "IM", obs: "Primeiras 24h de vida." },
+    { m: 2, n: "VIP (1ª dose)", d: "0,5 ml", v: "IM", obs: "Poliomielite Inativada." },
+    { m: 2, n: "Penta (1ª dose)", d: "0,5 ml", v: "IM", obs: "DTP/HB/Hib." },
+    { m: 2, n: "Pneumo 10 (1ª dose)", d: "0,5 ml", v: "IM", obs: "Proteção Pneumocócica." },
+    { m: 2, n: "Rotavírus (1ª dose)", d: "1,5 ml", v: "VO", obs: "Gotinha oral." },
+    { m: 3, n: "Meningo C (1ª dose)", d: "0,5 ml", v: "IM", obs: "Meningocócica C." },
+    { m: 4, n: "VIP (2ª dose)", d: "0,5 ml", v: "IM", obs: "Poliomielite Inativada." },
+    { m: 4, n: "Penta (2ª dose)", d: "0,5 ml", v: "IM", obs: "DTP/HB/Hib." },
+    { m: 4, n: "Pneumo 10 (2ª dose)", d: "0,5 ml", v: "IM", obs: "Proteção Pneumocócica." },
+    { m: 4, n: "Rotavírus (2ª dose)", d: "1,5 ml", v: "VO", obs: "Gotinha oral." },
+    { m: 5, n: "Meningo C (2ª dose)", d: "0,5 ml", v: "IM", obs: "Meningocócica C." },
+    { m: 6, n: "VIP (3ª dose)", d: "0,5 ml", v: "IM", obs: "Poliomielite Inativada." },
+    { m: 6, n: "Penta (3ª dose)", d: "0,5 ml", v: "IM", obs: "DTP/HB/Hib." },
+    { m: 9, n: "Febre Amarela (1ª dose)", d: "0,5 ml", v: "SC", obs: "Aos 9 meses." },
+    { m: 12, n: "Tríplice Viral (1ª dose)", d: "0,5 ml", v: "SC", obs: "SCR." },
+    { m: 15, n: "DTP (Reforço)", d: "0,5 ml", v: "IM", obs: "Tríplice Bacteriana." },
+    { m: 84, n: "dT (Duplo Adulto)", d: "0,5 ml", v: "IM", obs: "A partir dos 7 anos." }
 ];
 
 function calcularIdadeMeses(data) {
     const hoje = new Date();
     const nasc = new Date(data);
-    return (hoje.getFullYear() - nasc.getFullYear()) * 12 + (hoje.getMonth() - nasc.getMonth());
+    let meses = (hoje.getFullYear() - nasc.getFullYear()) * 12 + (hoje.getMonth() - nasc.getMonth());
+    if (hoje.getDate() < nasc.getDate()) meses--;
+    return meses;
 }
 
 function gerarLista() {
     const dataVal = document.getElementById('dataNasc').value;
-    const isGestante = document.getElementById('isGestante').checked;
     if(!dataVal) return;
 
     const idadeMeses = calcularIdadeMeses(dataVal);
-    const idadeAnos = Math.floor(idadeMeses / 12);
-    
-    document.getElementById('campoDT').style.display = (idadeAnos >= 7) ? 'flex' : 'none';
     document.getElementById('painelVacinas').style.display = 'block';
     
     const container = document.getElementById('listaVacinas');
     container.innerHTML = "";
 
     baseVacinas.forEach((vac, i) => {
-        // Lógica ACUMULATIVA: Mostra todas as vacinas que a idade mínima (vac.m) seja menor ou igual à idade atual
-        // E respeita o limite máximo de aplicação (vac.lim)
-        const idadeMinimaAtingida = vac.apenasGestante ? isGestante : (idadeMeses >= vac.m);
-        const aindaPodeTomar = vac.lim ? (idadeMeses <= vac.lim) : true;
-
-        if (idadeMinimaAtingida && aindaPodeTomar) {
+        // Lógica: Se a idade atual é maior ou igual à idade da vacina, ela aparece no checklist
+        if (idadeMeses >= vac.m) {
             container.innerHTML += `
                 <div class="item-vacina">
                     <input type="checkbox" id="v${i}" onchange="validar()">
                     <div>
                         <strong>${vac.n}</strong>
-                        <span class="tecnico">Idade Ref: ${vac.m} meses<br>Dose: ${vac.d} | Via: ${vac.v}<br>${vac.obs}</span>
+                        <span class="tecnico">Mês ref: ${vac.m} | Via: ${vac.v}<br>${vac.obs}</span>
                     </div>
                 </div>
             `;
@@ -226,29 +163,9 @@ function gerarLista() {
 }
 
 function validar() {
-    const dataVal = document.getElementById('dataNasc').value;
-    if(!dataVal) return;
-
-    const idadeMeses = calcularIdadeMeses(dataVal);
-    const idadeAnos = Math.floor(idadeMeses / 12);
-    const anoUltimaDT = parseInt(document.getElementById('anoUltimaDT').value);
-    const isGestante = document.getElementById('isGestante').checked;
     const box = document.getElementById('resultadoStatus');
-    const anoAtual = new Date().getFullYear();
-    
-    let html = `<h4>Paciente com ${idadeAnos} anos (${idadeMeses} meses)</h4>`;
-
-    // Lógica dT/Reforço
-    if (idadeAnos >= 7) {
-        if (anoUltimaDT) {
-            const dif = anoAtual - anoUltimaDT;
-            if (dif >= 10) html += `<div class="atrasada">⚠️ <b>dT:</b> Reforço vencido há ${dif} anos.</div>`;
-            else if (isGestante && dif >= 5) html += `<div class="atrasada">🤰 <b>dT:</b> Antecipar reforço gestante (última há ${dif} anos).</div>`;
-            else html += `<div class="reforco-info">📅 <b>Reforço OK:</b> Próxima em ${anoUltimaDT + 10}.</div>`;
-        }
-    }
-
     let pendentes = [];
+    
     const checkboxes = document.querySelectorAll('.grid-vacinas input[type="checkbox"]');
     checkboxes.forEach(chk => {
         if (!chk.checked) {
@@ -257,13 +174,20 @@ function validar() {
         }
     });
 
-    if(pendentes.length) {
-        html += `<div class="atrasada">📋 <b>Doses Pendentes no Prontuário:</b><br>${pendentes.join('<br>')}</div>`;
+    if(pendentes.length > 0) {
+        box.innerHTML = `
+            <div class="atrasada">
+                ⚠️ <b>ATENÇÃO - Doses Pendentes:</b><br>
+                <ul>${pendentes.map(p => `<li>${p}</li>`).join('')}</ul>
+                <p>Verifique a caderneta e atualize o esquema vacinal.</p>
+            </div>`;
     } else {
-        html += `<div class="em-dia">✅ Todas as doses para esta faixa etária foram aplicadas.</div>`;
+        box.innerHTML = `
+            <div class="em-dia">
+                ✅ <b>Esquema Vacinal Atualizado:</b><br>
+                Todas as doses recomendadas para esta idade foram registradas como aplicadas.
+            </div>`;
     }
-    
-    box.innerHTML = html;
 }
 </script>
 
