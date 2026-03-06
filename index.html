@@ -6,123 +6,75 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ludgerio Rocha | Portal de Protocolos Técnicos</title>
+<title>Portal Clínico | Ludgerio Rocha</title>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#f4f6f9;
+margin:0;
+background:#eef2f5;
 }
 
 header{
-background:#0B3C49;
+background:#005baa;
 color:white;
+padding:20px;
 text-align:center;
-padding:40px;
 }
 
 nav{
-background:#08313b;
+background:#003f7a;
+padding:12px;
 text-align:center;
-padding:15px;
 }
 
 nav a{
 color:white;
 text-decoration:none;
-margin:0 15px;
+margin:15px;
 font-weight:bold;
 }
 
+nav a:hover{
+text-decoration:underline;
+}
+
 .container{
-width:90%;
-max-width:1100px;
-margin:30px auto;
+padding:30px;
 }
 
 .card{
 background:white;
 padding:25px;
 margin-bottom:25px;
-border-radius:10px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
+border-radius:8px;
+box-shadow:0 0 8px rgba(0,0,0,0.15);
 }
 
-.controles{
-display:flex;
-flex-wrap:wrap;
-gap:15px;
+button{
+background:#005baa;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:5px;
+cursor:pointer;
 }
 
-.campo{
-display:flex;
-flex-direction:column;
-flex:1;
-min-width:200px;
-}
-
-label{
-font-weight:bold;
-font-size:14px;
+button:hover{
+background:#003f7a;
 }
 
 input,select{
-padding:10px;
-border-radius:6px;
-border:1px solid #ccc;
+padding:8px;
+margin-top:5px;
+margin-bottom:10px;
+width:250px;
 }
 
-.grid-vacinas{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-gap:12px;
+#resultado{
 margin-top:20px;
-}
-
-.item-vacina{
-background:#f9f9f9;
-padding:12px;
-border-radius:8px;
-border-left:4px solid #0B3C49;
-display:flex;
-align-items:flex-start;
-font-size:13px;
-}
-
-.item-vacina input{
-margin-right:10px;
-}
-
-.tecnico{
-display:block;
-color:#666;
-font-style:italic;
-}
-
-.atrasada{
-background:#fff5f5;
-padding:15px;
-border:1px solid #ffbcbc;
-border-radius:8px;
-color:#b30000;
-}
-
-.em-dia{
-background:#f0fff4;
-padding:15px;
-border:1px solid #bce6c9;
-border-radius:8px;
-color:#0b7d2c;
-}
-
-footer{
-background:#0B3C49;
-color:white;
-text-align:center;
-padding:20px;
-margin-top:40px;
+font-weight:bold;
 }
 
 </style>
@@ -132,14 +84,20 @@ margin-top:40px;
 <body>
 
 <header>
-<h1>Ludgerio Rocha</h1>
-<p>Portal de Protocolos Técnicos em Enfermagem</p>
+
+<h1>Portal Clínico</h1>
+<p>Ludgerio Rocha | Protocolos Técnicos em Enfermagem</p>
+
 </header>
 
 <nav>
 
 <a href="#inicio">Início</a>
-<a href="#vacina">Vacinação</a>
+<a href="#intranet">Intranet</a>
+<a href="#protocolos">Protocolos</a>
+<a href="#medicamentos">Medicamentos</a>
+<a href="#calculadoras">Calculadoras</a>
+<a href="#vacinas">Calculadora Vacinal</a>
 
 </nav>
 
@@ -147,302 +105,178 @@ margin-top:40px;
 
 <div class="card" id="inicio">
 
-<h2>Apresentação</h2>
+<h2>Portal de Ferramentas Clínicas</h2>
 
-<p>Portal desenvolvido para suporte à decisão clínica em enfermagem.</p>
-
-</div>
-
-<div class="card" id="vacina">
-
-<h3>Calculadora Vacinal Inteligente</h3>
-
-<div class="controles">
-
-<div class="campo">
-
-<label>Data de nascimento</label>
-
-<input type="date" id="dataNasc" onchange="gerarListaVacinas()">
+<p>Portal desenvolvido para apoio à prática clínica em enfermagem, contendo protocolos assistenciais, ferramentas clínicas e calculadora vacinal baseada no calendário do PNI.</p>
 
 </div>
 
-<div class="campo">
+<div class="card" id="intranet">
 
-<label>Gestante</label>
-
-<input type="checkbox" id="gestante" onchange="gerarListaVacinas()">
-
-</div>
-
-<div class="campo">
-
-<label>Última dose dT</label>
-
-<input type="date" id="ultimaDT" onchange="gerarListaVacinas()">
-
-</div>
-
-</div>
-
-<div id="painelVacinas" style="display:none">
-
-<hr>
-
-<div id="listaVacinas" class="grid-vacinas"></div>
-
-<div id="resultadoStatus"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<footer>
-
-© 2026 Ludgerio Rocha
-
-</footer>
-
-<script>
-
-const vacinas=[
-
-{nome:"BCG",minMes:0,maxAnos:15},
-
-{nome:"Hepatite B RN",maxDias:30},
-
-{nome:"Rotavírus 1 dose",minMes:2,maxMes:11.96},
-
-{nome:"Rotavírus 2 dose",minMes:4,maxMes:23.96},
-
-{nome:"Pentavalente",minMes:2,maxAnos:4.99},
-
-{nome:"Pneumo 10",minMes:2,maxAnos:4.99},
-
-{nome:"Meningo C",minMes:3,maxAnos:4.99},
-
-{nome:"Hepatite A",minMes:15,maxAnos:4.99},
-
-{nome:"VOP",minMes:15,maxAnos:4.99},
-
-{nome:"DTP reforço",minMes:15,maxAnos:6.99},
-
-{nome:"Tetraviral",minMes:15,maxAnos:6.99},
-
-{nome:"Varicela",minMes:48,maxAnos:6.99},
-
-{nome:"HPV",minMes:108,maxAnos:19},
-
-{nome:"Meningo ACWY",minMes:132,maxAnos:14},
-
-{nome:"VIP",minMes:2,maxAnos:19}
-
-];
-
-function gerarListaVacinas(){
-
-let data=document.getElementById("dataNasc").value;
-
-if(!data)return;
-
-let nasc=new Date(data);
-
-let hoje=new Date();
-
-let dias=Math.floor((hoje-nasc)/(1000*60*60*24));
-
-let meses=dias/30.44;
-
-let anos=dias/365.25;
-
-document.getElementById("painelVacinas").style.display="block";
-
-let lista=document.getElementById("listaVacinas");
-
-lista.innerHTML="";
-
-vacinas.forEach(v=>{
-
-let mostrar=false;
-
-if(v.maxDias){
-
-if(dias<=v.maxDias)mostrar=true;
-
-}
-
-else if(v.maxMes){
-
-if(meses>=v.minMes && meses<=v.maxMes)mostrar=true;
-
-}
-
-else{
-
-if(meses>=v.minMes && anos<=v.maxAnos)mostrar=true;
-
-}
-
-if(mostrar){
-
-lista.innerHTML+=`
-
-<div class="item-vacina">
-
-<input type="checkbox" onchange="validarVacinas()">
-
-<div>
-
-<strong>${v.nome}</strong>
-
-<span class="tecnico">Indicada para idade atual</span>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-});
-
-avaliarDt(anos);
-
-avaliarGestante();
-
-validarVacinas();
-
-}
-
-function avaliarDt(anos){
-
-let campo=document.getElementById("ultimaDT");
-
-if(!campo.value)return;
-
-let dt=new Date(campo.value);
-
-let hoje=new Date();
-
-let anosPassados=(hoje-dt)/(1000*60*60*24*365);
-
-if(anosPassados>=10){
-
-let lista=document.getElementById("listaVacinas");
-
-lista.innerHTML+=`
-
-<div class="item-vacina">
-
-<input type="checkbox" onchange="validarVacinas()">
-
-<div>
-
-<strong>dT reforço</strong>
-
-<span class="tecnico">Intervalo maior que 10 anos</span>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-}
-
-function avaliarGestante(){
-
-let gest=document.getElementById("gestante");
-
-if(gest.checked){
-
-let lista=document.getElementById("listaVacinas");
-
-lista.innerHTML+=`
-
-<div class="item-vacina">
-
-<input type="checkbox" onchange="validarVacinas()">
-
-<div>
-
-<strong>dTpa gestante</strong>
-
-<span class="tecnico">Aplicar a partir de 20 semanas</span>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-}
-
-function validarVacinas(){
-
-let pendentes=[];
-
-document.querySelectorAll(".item-vacina input").forEach(c=>{
-
-if(!c.checked){
-
-pendentes.push(
-
-c.parentElement.querySelector("strong").innerText
-
-);
-
-}
-
-});
-
-let box=document.getElementById("resultadoStatus");
-
-if(pendentes.length>0){
-
-box.innerHTML=`
-
-<div class="atrasada">
-
-⚠️ Vacinas Pendentes
+<h2>Intranet</h2>
 
 <ul>
 
-${pendentes.map(p=>`<li>${p}</li>`).join("")}
+<li>Prontuário do paciente</li>
+<li>Registro de atendimento</li>
+<li>Consulta de pacientes</li>
+<li>Relatórios</li>
 
 </ul>
 
 </div>
 
-`;
+<div class="card" id="protocolos">
 
-}
+<h2>Protocolos Clínicos</h2>
 
-else{
+<ul>
 
-box.innerHTML=`
+<li>Dengue</li>
+<li>Hipertensão</li>
+<li>Diabetes</li>
+<li>Saúde da mulher</li>
+<li>Imunização</li>
 
-<div class="em-dia">
-
-✅ Esquema vacinal em dia
+</ul>
 
 </div>
 
-`;
+<div class="card" id="medicamentos">
+
+<h2>Medicamentos</h2>
+
+<ul>
+
+<li>Dose pediátrica</li>
+<li>Dose adulto</li>
+<li>Cálculo por peso</li>
+<li>Diluição de medicamentos</li>
+
+</ul>
+
+</div>
+
+<div class="card" id="calculadoras">
+
+<h2>Calculadoras Clínicas</h2>
+
+<ul>
+
+<li>IMC</li>
+<li>Dose por peso</li>
+<li>Idade gestacional</li>
+
+</ul>
+
+</div>
+
+<div class="card" id="vacinas">
+
+<h2>Calculadora Vacinal</h2>
+
+<label>Data de nascimento</label><br>
+<input type="date" id="nascimento"><br>
+
+<label>Gestante</label><br>
+<input type="checkbox" id="gestante"><br>
+
+<label>Última dose dT</label><br>
+<input type="date" id="dt"><br>
+
+<button onclick="calcularVacinas()">Calcular</button>
+
+<div id="resultado"></div>
+
+</div>
+
+</div>
+
+<script>
+
+function calcularVacinas(){
+
+var nasc = document.getElementById("nascimento").value
+
+if(!nasc){
+
+alert("Informe a data de nascimento")
+
+return
 
 }
+
+var nascimento = new Date(nasc)
+
+var hoje = new Date()
+
+var idadeDias = (hoje - nascimento)/(1000*60*60*24)
+
+var idadeAnos = idadeDias/365
+
+var resultado = ""
+
+if(idadeAnos < 15){
+
+resultado += "BCG (se não vacinado)<br>"
+
+}
+
+if(idadeDias <= 30){
+
+resultado += "Hepatite B RN<br>"
+
+}
+
+if(idadeDias <= 334){
+
+resultado += "Rotavírus dose 1<br>"
+
+}
+
+if(idadeDias <= 729){
+
+resultado += "Rotavírus dose 2<br>"
+
+}
+
+if(idadeAnos <= 4.9){
+
+resultado += "Pentavalente<br>Pneumocócica 10<br>Meningocócica C<br>Hepatite A<br>VOP<br>"
+
+}
+
+if(idadeAnos <= 6.9){
+
+resultado += "DTP<br>Tetraviral<br>Varicela<br>"
+
+}
+
+if(idadeAnos <= 14){
+
+resultado += "Meningocócica ACWY<br>"
+
+}
+
+if(idadeAnos <= 19){
+
+resultado += "HPV<br>VIP<br>"
+
+}
+
+var gestante = document.getElementById("gestante").checked
+
+if(gestante){
+
+resultado += "dTpa gestante<br>"
+
+}
+
+document.getElementById("resultado").innerHTML = resultado
 
 }
 
 </script>
 
 </body>
-
 </html>
