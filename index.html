@@ -1,282 +1,245 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<!-- saved from url=(0037)https://www.ludgerio.com/#calculadora -->
+<html lang="pt-br"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<head>
-
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Portal Clínico | Ludgerio Rocha</title>
+<title>Ludgerio Rocha | Portal de Protocolos Técnicos</title>
 
 <style>
+/* Estilos Globais */
+body { margin:0; font-family: Arial, sans-serif; background:#f4f6f9; scroll-behavior: smooth; }
 
-body{
-font-family:Arial;
-margin:0;
-background:#eef2f5;
+header {
+    background:#0B3C49;
+    color:white;
+    text-align:center;
+    padding:50px 20px;
 }
 
-header{
-background:#005baa;
-color:white;
-padding:20px;
-text-align:center;
+nav {
+    background:#08313b;
+    text-align:center;
+    padding:15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-nav{
-background:#003f7a;
-padding:12px;
-text-align:center;
+nav a {
+    color:white;
+    text-decoration:none;
+    margin:0 20px;
+    font-weight:bold;
+    transition: 0.3s;
 }
 
-nav a{
-color:white;
-text-decoration:none;
-margin:15px;
-font-weight:bold;
+nav a:hover { color: #4fd1c5; text-decoration: underline; }
+
+.container {
+    width:90%;
+    max-width:1100px;
+    margin:40px auto;
 }
 
-nav a:hover{
-text-decoration:underline;
+.card {
+    background:white;
+    padding:30px;
+    margin-bottom:25px;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+    transition:0.3s;
 }
 
-.container{
-padding:30px;
-}
+.card:hover { transform:translateY(-5px); }
 
-.card{
-background:white;
-padding:25px;
-margin-bottom:25px;
-border-radius:8px;
-box-shadow:0 0 8px rgba(0,0,0,0.15);
-}
+/* --- Formulários e Campos --- */
+.controles { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; margin-bottom: 20px; }
+.campo { display: flex; flex-direction: column; flex: 1; min-width: 200px; }
+label { font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #0B3C49; }
+input, select { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; }
 
-button{
-background:#005baa;
-color:white;
-border:none;
-padding:10px 20px;
-border-radius:5px;
-cursor:pointer;
-}
+/* --- Vacinação --- */
+.grid-vacinas { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
+.item-vacina { background: #f9f9f9; padding: 12px; border-radius: 10px; border-left: 5px solid #0B3C49; display: flex; align-items: flex-start; font-size: 13px; }
+.item-vacina input { margin-right: 12px; margin-top: 3px; scale: 1.3; cursor: pointer; }
+.tecnico { display: block; color: #666; font-style: italic; margin-top: 4px; line-height: 1.4; }
 
-button:hover{
-background:#003f7a;
-}
+/* --- Status e Resultados --- */
+.status-box { margin-top: 25px; padding: 15px; border-radius: 10px; }
+.atrasada { color: #d9534f; background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 8px; }
+.em-dia { color: #28a745; background: #f0fff4; border: 1px solid #c3e6cb; padding: 15px; border-radius: 8px; }
+.resultado-calc { background: #e7f3f5; border: 1px solid #0B3C49; padding: 15px; border-radius: 8px; margin-top: 20px; color: #0B3C49; }
 
-input,select{
-padding:8px;
-margin-top:5px;
-margin-bottom:10px;
-width:250px;
-}
+/* --- Tabelas de Medicamentos --- */
+.tabela-med { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+.tabela-med th, .tabela-med td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+.tabela-med th { background: #0B3C49; color: white; }
+.info-destaque { background: #fff8e1; border-left: 5px solid #ffc107; padding: 10px; margin-top: 10px; font-size: 13px; }
 
-#resultado{
-margin-top:20px;
-font-weight:bold;
-}
+/* --- Urgência --- */
+.grid-urgencia { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+.protocolo-item { padding: 15px; border: 1px solid #ddd; border-radius: 10px; background: #fffafb; }
+.btn-urgencia { background: #d9534f; color: white; width: 100%; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
+footer { background:#0B3C49; color:white; text-align:center; padding:20px; margin-top:40px; }
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-<h1>Portal Clínico</h1>
-<p>Ludgerio Rocha | Protocolos Técnicos em Enfermagem</p>
-
+    <h1>Ludgerio Rocha</h1>
+    <p>Portal de Protocolos Técnicos em Enfermagem</p>
 </header>
 
 <nav>
-
-<a href="#inicio">Início</a>
-<a href="#intranet">Intranet</a>
-<a href="#protocolos">Protocolos</a>
-<a href="#medicamentos">Medicamentos</a>
-<a href="#calculadoras">Calculadoras</a>
-<a href="#vacinas">Calculadora Vacinal</a>
-
+    <a href="https://www.ludgerio.com/#inicio">Início</a>
+    <a href="https://www.ludgerio.com/#calculadora">Vacinação</a>
+    <a href="https://www.ludgerio.com/#medicamentos">Cálculos/Diluição</a>
+    <a href="https://www.ludgerio.com/#urgencia">Urgência</a>
+    <a href="https://www.ludgerio.com/intranet/login.html">Intranet</a>
 </nav>
 
 <div class="container">
 
-<div class="card" id="inicio">
+    <div class="card" id="inicio">
+        <h2>Apresentação</h2>
+        <p>Portal desenvolvido para compartilhar padronizações assistenciais e ferramentas de suporte à decisão clínica em enfermagem.</p>
+    </div>
 
-<h2>Portal de Ferramentas Clínicas</h2>
+    <div class="card" id="calculadora">
+        <h3>Calculadora Vacinal Inteligente (Acumulativa)</h3>
+        <p><small>Verifique as doses pendentes e realize o resgate vacinal.</small></p>
+        <div class="controles">
+            <div class="campo">
+                <label>Data de Nascimento:</label>
+                <input type="date" id="dataNasc" onchange="gerarListaVacinas()">
+            </div>
+        </div>
+        <div id="painelVacinas" style="display: block;">
+            <hr>
+            <div id="listaVacinas" class="grid-vacinas"><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>BCG</strong><span class="tecnico">Ref: 0 meses | ID</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Hepatite B (Nascer)</strong><span class="tecnico">Ref: 0 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>VIP (1ª dose)</strong><span class="tecnico">Ref: 2 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Penta (1ª dose)</strong><span class="tecnico">Ref: 2 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Pneumo 10 (1ª dose)</strong><span class="tecnico">Ref: 2 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Rotavírus (1ª dose)</strong><span class="tecnico">Ref: 2 meses | VO</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Meningo C (1ª dose)</strong><span class="tecnico">Ref: 3 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>VIP (2ª dose)</strong><span class="tecnico">Ref: 4 meses | IM</span></div></div><div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>Penta (2ª dose)</strong><span class="tecnico">Ref: 4 meses | IM</span></div></div></div>
+            <div id="resultadoStatus" class="status-box"><div class="atrasada">⚠️ <b>Doses Pendentes:</b><ul><li>BCG</li><li>Hepatite B (Nascer)</li><li>VIP (1ª dose)</li><li>Penta (1ª dose)</li><li>Pneumo 10 (1ª dose)</li><li>Rotavírus (1ª dose)</li><li>Meningo C (1ª dose)</li><li>VIP (2ª dose)</li><li>Penta (2ª dose)</li></ul></div></div>
+        </div>
+    </div>
 
-<p>Portal desenvolvido para apoio à prática clínica em enfermagem, contendo protocolos assistenciais, ferramentas clínicas e calculadora vacinal baseada no calendário do PNI.</p>
+    <div class="card" id="medicamentos">
+        <h3 style="color: #0B3C49;">💊 Administração de Medicamentos</h3>
+        
+        <h4>Cálculo de Gotejamento de Soro</h4>
+        <div class="controles">
+            <div class="campo"><label>Volume (ml):</label><input type="number" id="vol" placeholder="Ex: 500" oninput="calcGota()"></div>
+            <div class="campo"><label>Tempo:</label><input type="number" id="temp" placeholder="Ex: 8" oninput="calcGota()"></div>
+            <div class="campo">
+                <label>Unidade:</label>
+                <select id="uni" onchange="calcGota()">
+                    <option value="h">Horas</option>
+                    <option value="m">Minutos</option>
+                </select>
+            </div>
+        </div>
+        <div id="resGota" class="resultado-calc" style="display:none;"></div>
 
-</div>
+        <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
 
-<div class="card" id="intranet">
+        <h4>Penicilina Cristalina (Benzilpenicilina)</h4>
+        <table class="tabela-med">
+            <thead>
+                <tr><th>Apresentação</th><th>Solvente (AD)</th><th>Vol. Final</th><th>Concentração (1ml)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>5.000.000 UI</td><td>8 ml</td><td>10 ml</td><td>500.000 UI</td></tr>
+                <tr><td>10.000.000 UI</td><td>6 ml</td><td>10 ml</td><td>1.000.000 UI</td></tr>
+            </tbody>
+        </table>
 
-<h2>Intranet</h2>
+        <h4 style="margin-top: 20px;">Insulina (Rediluição para 1 UI/ml)</h4>
+        <div class="info-destaque">
+            1. Aspirar 10 UI (0,1ml) de Insulina + 0,9ml de AD = 1ml total.<br>
+            2. Resultado: Cada 0,1ml da seringa contém 1 UI.
+        </div>
+    </div>
 
-<ul>
-
-<li>Prontuário do paciente</li>
-<li>Registro de atendimento</li>
-<li>Consulta de pacientes</li>
-<li>Relatórios</li>
-
-</ul>
-
-</div>
-
-<div class="card" id="protocolos">
-
-<h2>Protocolos Clínicos</h2>
-
-<ul>
-
-<li>Dengue</li>
-<li>Hipertensão</li>
-<li>Diabetes</li>
-<li>Saúde da mulher</li>
-<li>Imunização</li>
-
-</ul>
-
-</div>
-
-<div class="card" id="medicamentos">
-
-<h2>Medicamentos</h2>
-
-<ul>
-
-<li>Dose pediátrica</li>
-<li>Dose adulto</li>
-<li>Cálculo por peso</li>
-<li>Diluição de medicamentos</li>
-
-</ul>
-
-</div>
-
-<div class="card" id="calculadoras">
-
-<h2>Calculadoras Clínicas</h2>
-
-<ul>
-
-<li>IMC</li>
-<li>Dose por peso</li>
-<li>Idade gestacional</li>
-
-</ul>
-
-</div>
-
-<div class="card" id="vacinas">
-
-<h2>Calculadora Vacinal</h2>
-
-<label>Data de nascimento</label><br>
-<input type="date" id="nascimento"><br>
-
-<label>Gestante</label><br>
-<input type="checkbox" id="gestante"><br>
-
-<label>Última dose dT</label><br>
-<input type="date" id="dt"><br>
-
-<button onclick="calcularVacinas()">Calcular</button>
-
-<div id="resultado"></div>
+    <div class="card" id="urgencia" style="border-left: 8px solid #d9534f;">
+        <h3 style="color: #d9534f;">🚨 Urgência e Emergência</h3>
+        <div class="grid-urgencia">
+            <div class="protocolo-item">
+                <strong>PCR - Adulto</strong>
+                <button class="btn-urgencia" onclick="alert(&#39;Consulte o fluxograma na Intranet.&#39;)">Ver Conduta</button>
+            </div>
+            <div class="protocolo-item">
+                <strong>OVACE</strong>
+                <button class="btn-urgencia" onclick="alert(&#39;Consulte a Manobra de Heimlich na Intranet.&#39;)">Ver Conduta</button>
+            </div>
+            <div class="protocolo-item">
+                <strong>Infarto (IAM)</strong>
+                <button class="btn-urgencia" onclick="alert(&#39;ECG em 10 min e monitorização.&#39;)">Ver Conduta</button>
+            </div>
+        </div>
+    </div>
 
 </div>
 
-</div>
+<footer>© 2026 Ludgerio Rocha | Portal de Protocolos Técnicos</footer>
 
 <script>
+// --- LÓGICA DE VACINAÇÃO ---
+const baseVacinas = [
+    { m: 0, n: "BCG", d: "0,1 ml", v: "ID", obs: "Dose única." },
+    { m: 0, n: "Hepatite B (Nascer)", d: "0,5 ml", v: "IM", obs: "Primeiras 24h." },
+    { m: 2, n: "VIP (1ª dose)", d: "0,5 ml", v: "IM", obs: "Pólio Inativada." },
+    { m: 2, n: "Penta (1ª dose)", d: "0,5 ml", v: "IM", obs: "DTP/HB/Hib." },
+    { m: 2, n: "Pneumo 10 (1ª dose)", d: "0,5 ml", v: "IM", obs: "Proteção Pneumocócica." },
+    { m: 2, n: "Rotavírus (1ª dose)", d: "1,5 ml", v: "VO", obs: "Gotinha." },
+    { m: 3, n: "Meningo C (1ª dose)", d: "0,5 ml", v: "IM", obs: "Meningocócica C." },
+    { m: 4, n: "VIP (2ª dose)", d: "0,5 ml", v: "IM", obs: "Pólio Inativada." },
+    { m: 4, n: "Penta (2ª dose)", d: "0,5 ml", v: "IM", obs: "DTP/HB/Hib." }
+];
 
-function calcularVacinas(){
+function gerarListaVacinas() {
+    const dataVal = document.getElementById('dataNasc').value;
+    if(!dataVal) return;
+    const nasc = new Date(dataVal);
+    const hoje = new Date();
+    let meses = (hoje.getFullYear() - nasc.getFullYear()) * 12 + (hoje.getMonth() - nasc.getMonth());
+    if (hoje.getDate() < nasc.getDate()) meses--;
 
-var nasc = document.getElementById("nascimento").value
-
-if(!nasc){
-
-alert("Informe a data de nascimento")
-
-return
-
+    document.getElementById('painelVacinas').style.display = 'block';
+    const container = document.getElementById('listaVacinas');
+    container.innerHTML = "";
+    baseVacinas.forEach((vac, i) => {
+        if (meses >= vac.m) {
+            container.innerHTML += `<div class="item-vacina"><input type="checkbox" onchange="validarVacinas()"><div><strong>${vac.n}</strong><span class="tecnico">Ref: ${vac.m} meses | ${vac.v}</span></div></div>`;
+        }
+    });
+    validarVacinas();
 }
 
-var nascimento = new Date(nasc)
-
-var hoje = new Date()
-
-var idadeDias = (hoje - nascimento)/(1000*60*60*24)
-
-var idadeAnos = idadeDias/365
-
-var resultado = ""
-
-if(idadeAnos < 15){
-
-resultado += "BCG (se não vacinado)<br>"
-
+function validarVacinas() {
+    const box = document.getElementById('resultadoStatus');
+    let pendentes = [];
+    document.querySelectorAll('.item-vacina input').forEach(chk => {
+        if (!chk.checked) pendentes.push(chk.nextElementSibling.querySelector('strong').innerText);
+    });
+    if(pendentes.length > 0) box.innerHTML = `<div class="atrasada">⚠️ <b>Doses Pendentes:</b><ul>${pendentes.map(p => `<li>${p}</li>`).join('')}</ul></div>`;
+    else box.innerHTML = `<div class="em-dia">✅ Esquema vacinal em dia para a idade.</div>`;
 }
 
-if(idadeDias <= 30){
-
-resultado += "Hepatite B RN<br>"
-
+// --- LÓGICA DE GOTEJAMENTO ---
+function calcGota() {
+    const v = parseFloat(document.getElementById('vol').value);
+    const t = parseFloat(document.getElementById('temp').value);
+    const u = document.getElementById('uni').value;
+    const res = document.getElementById('resGota');
+    if(!v || !t) { res.style.display='none'; return; }
+    res.style.display='block';
+    let g = (u==='h') ? v/(t*3) : (v*20)/t;
+    let mg = (u==='h') ? v/t : (v*60)/t;
+    res.innerHTML = `<strong>Resultado da Infusão:</strong><br>🔹 Macrogotas: ${Math.ceil(g)} gts/min<br>🔹 Microgotas: ${Math.ceil(mg)} microgts/min`;
 }
-
-if(idadeDias <= 334){
-
-resultado += "Rotavírus dose 1<br>"
-
-}
-
-if(idadeDias <= 729){
-
-resultado += "Rotavírus dose 2<br>"
-
-}
-
-if(idadeAnos <= 4.9){
-
-resultado += "Pentavalente<br>Pneumocócica 10<br>Meningocócica C<br>Hepatite A<br>VOP<br>"
-
-}
-
-if(idadeAnos <= 6.9){
-
-resultado += "DTP<br>Tetraviral<br>Varicela<br>"
-
-}
-
-if(idadeAnos <= 14){
-
-resultado += "Meningocócica ACWY<br>"
-
-}
-
-if(idadeAnos <= 19){
-
-resultado += "HPV<br>VIP<br>"
-
-}
-
-var gestante = document.getElementById("gestante").checked
-
-if(gestante){
-
-resultado += "dTpa gestante<br>"
-
-}
-
-document.getElementById("resultado").innerHTML = resultado
-
-}
-
 </script>
 
-</body>
-</html>
+
+
+</body></html>
