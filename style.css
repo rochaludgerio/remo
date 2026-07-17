@@ -253,8 +253,11 @@ color:white;
 }
 
 .hero-text{
-
 flex:1;
+background:#ffffff;
+color:#000000;
+padding:40px;
+border-radius:20px;
 
 }
 
