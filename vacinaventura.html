@@ -6,118 +6,167 @@
 <title>Vacinaventura</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap">
 <style>
-:root{--bg:#d9f2ee;--ink:#0f4c4c;--card:#ffffff;--btn:#ff6b57;--btnink:#ffffff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#d9f2ee;--ink:#0f4c4c;--card:#fff;--btn:#ff6b57;--btnink:#fff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e2a33;--ink:#d9f2ee;--card:#17414d;--btn:#ff7d6a;--btnink:#2a0b07;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0e2a33;--ink:#d9f2ee;--card:#17414d;--btn:#ff7d6a;--btnink:#2a0b07;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 12px 20px;min-height:100vh}
-h1{margin:0;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800;letter-spacing:-.01em}
+h1{margin:0;font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800}
 canvas{width:100%;max-width:900px;aspect-ratio:16/9;border-radius:18px;background:var(--card);touch-action:none;display:block}
 .pad{display:flex;gap:10px;width:100%;max-width:900px;justify-content:space-between}
 .pad div{display:flex;gap:10px}
-.pad button{font:inherit;font-weight:800;font-size:1.6rem;min-width:72px;height:60px;border:0;border-radius:16px;background:var(--btn);color:var(--btnink);touch-action:none;user-select:none}
+.pad button{font:inherit;font-weight:800;font-size:1.5rem;min-width:72px;height:60px;border:0;border-radius:16px;background:var(--btn);color:var(--btnink);touch-action:none;user-select:none}
 .pad button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-p{margin:0;font-size:1rem;max-width:60ch;text-align:center}
+p{margin:0;max-width:60ch;text-align:center}
 </style>
 </head>
 <body>
 <h1>Vacinaventura</h1>
-<canvas id="g" width="800" height="450" aria-label="Jogo de plataforma: a Vaci, uma dose de vacina, enfrenta vírus"></canvas>
-<div class="pad" id="pad">
+<canvas id="g" width="800" height="450" aria-label="Jogo de plataforma: a Vaci usa vacinas como upgrades para derrotar doenças"></canvas>
+<div class="pad">
   <div><button data-k="l" aria-label="Esquerda">◀</button><button data-k="r" aria-label="Direita">▶</button></div>
   <div><button data-k="j" aria-label="Pular">Pular</button></div>
 </div>
-<p>Setas ou A/D para mover, espaço para pular. Enter inicia e reinicia.</p>
+<p>Setas ou A/D para mover, espaço para pular. Enter inicia e continua.</p>
 <script>
 const c=document.getElementById('g'),x=c.getContext('2d');
-const W=800,H=450,LW=3200,F='"Baloo 2",system-ui,sans-serif';
-const COL={sky1:'#bfe9e4',sky2:'#eefaf7',ground:'#2b4a6f',top:'#4fb286',liq:'#ff6b57',ink:'#0f4c4c',vir:'#6b3fa0',ab:'#ffc233'};
-// plataformas [x,y,w,h]
-const P=[[0,400,700,50],[800,400,700,50],[1620,400,680,50],[2420,400,780,50],
-[260,320,110,16],[480,270,110,16],[900,320,120,16],[1080,250,110,16],[1260,310,100,16],[1380,230,110,16],
-[1525,340,60,16],[1700,320,110,16],[1880,260,120,16],[2060,330,100,16],[2180,240,100,16],
-[2520,320,110,16],[2700,260,110,16],[2880,320,100,16]];
-// vírus [x, topo da plataforma, min, max]
-const V0=[[450,400,330,650],[1000,400,820,1450],[1250,400,1100,1480],[1760,400,1640,2280],[2050,400,1900,2280],
-[1900,260,1885,1990],[2540,320,2525,2620],[2600,400,2440,3000],[2900,400,2700,3150]];
-let V,A,cam,p,st='start',cp,cps=[60,1250,2500],got=0,t=0,msg='';
-const total=P.length-4+12;
-function buildItems(){A=[];for(let i=4;i<P.length;i++){const q=P[i];A.push({x:q[0]+q[2]/2,y:q[1]-30,on:1})}
- [150,200,250,1150,1190,1700,1760,2480,2540,2600,3000,3050].forEach(px=>A.push({x:px,y:372,on:1}))}
-function reset(full){V=V0.map(v=>({x:v[2]+(v[3]-v[2])/2,y:v[1]-16,mn:v[2],mx:v[3],d:Math.random()<.5?-1:1,on:1}));
- if(full){buildItems();got=0;cp=0;p={x:60,y:300,w:26,h:38,vx:0,vy:0,g:0,hp:3,inv:0,f:1,coy:0,jb:0};}
- else{p.x=cps[cp];p.y=300;p.vx=p.vy=0;p.hp=3;p.inv=90}}
-const K={l:0,r:0,j:0,jp:0};
+const W=800,H=450,F='"Baloo 2",system-ui,sans-serif',INK='#0f4c4c';
+const D={
+sar:{n:'Sarampo',v:'Tríplice viral',u:'Pulo duplo',col:'#e8503a',l:'S',f:'A tríplice viral protege contra sarampo, caxumba e rubéola.'},
+gri:{n:'Gripe',v:'Influenza',u:'Corrida veloz',col:'#18a5b8',l:'G',f:'A vacina da gripe é atualizada todos os anos.'},
+pol:{n:'Poliomielite',v:'Pólio',u:'Super pulo',col:'#7a8f2a',l:'P',f:'A vacina da pólio ajuda a manter o país livre da doença.'},
+feb:{n:'Febre amarela',v:'Febre amarela',u:'Planar (segure pular no ar)',col:'#e6b800',l:'F',f:'A vacina da febre amarela é oferecida pelo SUS.'},
+cov:{n:'Covid-19',v:'Covid-19',u:'Escudo',col:'#7a3fb0',l:'C',f:'As vacinas contra a covid-19 reduzem os casos graves.'}};
+const KEYS=['sar','gri','pol','feb','cov'];
+const LV=[{n:'Infância',nw:['sar'],mx:['sar']},{n:'Inverno',nw:['gri'],mx:['gri','sar']},
+{n:'Trópicos',nw:['pol','feb'],mx:['pol','feb','sar','gri']},{n:'Pandemia',nw:['cov'],mx:['cov','gri','pol','feb','sar']}];
+let LW,P,V,A,I,cps,goal,cam=0,p,st='start',cp=0,got=0,t=0,mt=0,msg='',lv=0,have={},s=1;
+const rnd=()=>(s=s*16807%2147483647)/2147483647;
+function build(n){
+ s=n*977+13;const L=LV[n];LW=2800+n*450;P=[];V=[];A=[];I=[];cps=[60];
+ let px=0,i=0;const sg=[];
+ while(px<LW){
+  const last=i>0&&LW-px<1100,len=i==0?750:last?Math.max(LW-px,520):420+rnd()*260;
+  if(last)LW=px+len;
+  P.push([px,400,len,50]);sg.push([px,len]);
+  const gap=100+rnd()*30;
+  if(!last&&gap>112)P.push([px+len+gap/2-30,350,60,16]);
+  px+=len+gap;i++}
+ sg.forEach(([sx,len],j)=>{
+  const m=1+(rnd()<.6?1:0);
+  for(let k=0;k<m;k++){const w=90+rnd()*40,fx=sx+80+rnd()*Math.max(1,len-w-160),fy=235+rnd()*85;P.push([fx,fy,w,16]);A.push({x:fx+w/2,y:fy-30,on:1})}
+  for(let a=0;a<3;a++)A.push({x:sx+len/2-40+a*40,y:372,on:1});
+  if(j>0){const cnt=1+(n>0?1:0)+(rnd()<.4?1:0);
+   for(let e=0;e<cnt;e++){const k=(e==0&&j<=L.nw.length)?L.nw[j-1]:L.mx[Math.floor(rnd()*L.mx.length)],ex=sx+70+rnd()*Math.max(1,len-140);
+    V.push({k,x:ex,y:k=='feb'?330:384,mn:Math.max(sx+10,ex-90),mx:Math.min(sx+len-10,ex+90),d:rnd()<.5?-1:1,on:1})}
+   if(j%2==0)cps.push(sx+40)}});
+ L.nw.forEach((k,j)=>{if(have[k])return;const vx=240+j*240;P.push([vx-40,310,80,16]);I.push({k,x:vx,y:282})});
+ goal=LW-110;}
+function startLevel(){build(lv);cam=0;cp=0;
+ p={x:60,y:300,w:26,h:38,vx:0,vy:0,g:0,hp:3,inv:0,f:1,coy:0,jb:0,air:0,sh:have.cov?1:0};
+ msg='Fase '+(lv+1)+': '+LV[lv].n+(LV[lv].nw.some(k=>!have[k])?'. Pegue a vacina primeiro!':'');mt=200}
+function resp(){p.x=cps[cp];p.y=300;p.vx=p.vy=0;p.inv=90;p.sh=have.cov?1:0}
+const K={l:0,r:0,j:0};
 const map={ArrowLeft:'l',a:'l',A:'l',ArrowRight:'r',d:'r',D:'r',ArrowUp:'j',w:'j',W:'j',' ':'j'};
-addEventListener('keydown',e=>{if(map[e.key]){K[map[e.key]]=1;if(map[e.key]=='j')p&&(p.jb=8);e.preventDefault()}
+addEventListener('keydown',e=>{const k=map[e.key];if(k){K[k]=1;if(k=='j'&&p)p.jb=8;e.preventDefault()}
  if(e.key=='Enter'||(e.key==' '&&st!='play'))go()});
 addEventListener('keyup',e=>{if(map[e.key])K[map[e.key]]=0});
-document.querySelectorAll('#pad button').forEach(b=>{const k=b.dataset.k;
+document.querySelectorAll('.pad button').forEach(b=>{const k=b.dataset.k;
  b.addEventListener('pointerdown',e=>{e.preventDefault();K[k]=1;if(k=='j'){p.jb=8;if(st!='play')go()}});
  ['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,()=>K[k]=0))});
 c.addEventListener('pointerdown',()=>{if(st!='play')go()});
-function go(){if(st=='start'||st=='win'){reset(1);st='play'}else if(st=='lose'){reset(0);st='play'}}
+function go(){
+ if(st=='start'||st=='win'){lv=0;have={};got=0;startLevel();st='play'}
+ else if(st=='lvl'){lv++;startLevel();st='play'}
+ else if(st=='lose'){p.hp=3;resp();st='play'}}
 const hit=(a,b)=>a.x<b[0]+b[2]&&a.x+a.w>b[0]&&a.y<b[1]+b[3]&&a.y+a.h>b[1];
 function move(o,dx,dy){o.x+=dx;for(const q of P)if(hit(o,q)){if(dx>0)o.x=q[0]-o.w;else if(dx<0)o.x=q[0]+q[2]}
  o.y+=dy;o.g=0;for(const q of P)if(hit(o,q)){if(dy>0){o.y=q[1]-o.h;o.vy=0;o.g=1}else if(dy<0){o.y=q[1]+q[3];o.vy=0}}}
-function hurt(){if(p.inv>0)return;p.hp--;p.inv=90;if(p.hp<=0){st='lose'}}
+function hurt(){if(p.inv>0)return;
+ if(p.sh){p.sh=0;p.inv=60;msg='Escudo gasto';mt=60;return}
+ p.hp--;p.inv=90;if(p.hp<=0)st='lose'}
 function update(){t++;if(st!='play')return;
- const ax=K.r-K.l;if(ax){p.vx+=ax*.5;p.f=ax}else p.vx*=.8;
- p.vx=Math.max(-3.7,Math.min(3.7,p.vx));
- p.coy=p.g?6:p.coy-1;p.jb--;
- if(p.jb>0&&p.coy>0){p.vy=-12.2;p.coy=0;p.jb=0;p.g=0}
+ const ax=K.r-K.l,mx=have.gri?4.9:3.7;
+ if(ax){p.vx+=ax*.5;p.f=ax}else p.vx*=.8;
+ p.vx=Math.max(-mx,Math.min(mx,p.vx));
+ p.coy=p.g?6:p.coy-1;p.jb--;if(p.g)p.air=0;
+ if(p.jb>0){
+  if(p.coy>0){p.vy=have.pol?-14:-12.2;p.coy=0;p.jb=0;p.g=0}
+  else if(have.sar&&!p.air){p.vy=-11.5;p.air=1;p.jb=0}}
  if(!K.j&&p.vy<-4)p.vy=-4;
  p.vy=Math.min(p.vy+.6,14);
+ if(have.feb&&K.j&&p.vy>1.8&&!p.g)p.vy=1.8;
  move(p,p.vx,p.vy);
- if(p.x<0)p.x=0;if(p.x>LW-p.w)p.x=LW-p.w;
+ if(p.x<0)p.x=0;
  if(p.inv>0)p.inv--;
- if(p.y>H+80){p.hp--;if(p.hp<=0){st='lose';p.y=300;p.x=cps[cp];p.vy=0}else{p.x=cps[cp];p.y=300;p.vx=p.vy=0;p.inv=90}}
+ if(p.y>H+80){p.hp--;if(p.hp<=0){st='lose';resp()}else resp()}
  for(let i=cps.length-1;i>cp;i--)if(p.x>cps[i]){cp=i;msg='Ponto de vacinação alcançado';mt=120}
- for(const v of V){if(!v.on)continue;v.x+=v.d*1.1;if(v.x<v.mn||v.x>v.mx)v.d*=-1;
-  const r={x:v.x-15,y:v.y-15,w:30,h:30};
-  if(p.x<r.x+r.w&&p.x+p.w>r.x&&p.y<r.y+r.h&&p.y+p.h>r.y){
-   if(p.vy>0&&p.y+p.h<r.y+18){v.on=0;p.vy=-9;}else hurt()}}
- for(const a of A){if(a.on&&Math.abs(a.x-(p.x+13))<20&&Math.abs(a.y-(p.y+19))<28){a.on=0;got++;if(got%10==0&&p.hp<5){p.hp++;msg='Reforço! +1 vida';mt=120}}}
- if(hit(p,[3060,320,60,80])){st='win'}
- cam=Math.max(0,Math.min(LW-W,p.x-W/2+13));}
-let mt=0;cam=0;
+ for(const v of V){if(!v.on)continue;v.x+=v.d*(v.k=='feb'?1.4:1.1);if(v.x<v.mn||v.x>v.mx)v.d*=-1;
+  if(p.x<v.x+15&&p.x+p.w>v.x-15&&p.y<v.y+15&&p.y+p.h>v.y-15){
+   if(have[v.k]){v.on=0;msg='Imune! '+D[v.k].n+' derrotado';mt=70}
+   else if(p.vy>0&&p.y+p.h<v.y+4){p.vy=-10;msg='Sem a vacina '+D[v.k].v+' não adianta!';mt=100}
+   else hurt()}}
+ for(let i=I.length-1;i>=0;i--){const it=I[i];
+  if(Math.abs(it.x-(p.x+13))<26&&Math.abs(it.y-(p.y+19))<34){have[it.k]=1;I.splice(i,1);if(it.k=='cov')p.sh=1;
+   msg='Vacina '+D[it.k].v+'! Upgrade: '+D[it.k].u;mt=220}}
+ for(const a of A){if(a.on&&Math.abs(a.x-(p.x+13))<20&&Math.abs(a.y-(p.y+19))<28){a.on=0;got++;
+  if(got%10==0&&p.hp<5){p.hp++;msg='Reforço! +1 vida';mt=120}}}
+ if(p.x>goal-10&&p.y>300)st=lv==LV.length-1?'win':'lvl';
+ cam=Math.max(0,Math.min(LW-W+60,p.x-W/2+13));}
 function circ(px,py,r,f){x.fillStyle=f;x.beginPath();x.arc(px,py,r,0,7);x.fill()}
+function dis(v){const d=D[v.k],k=v.k,y=v.y+(k=='feb'?Math.sin(t/10)*6:0);x.save();x.translate(v.x,y);
+ if(k=='gri'||k=='cov'){x.rotate(t/40*v.d);x.strokeStyle=d.col;x.lineWidth=3;
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;x.beginPath();x.moveTo(Math.cos(a)*10,Math.sin(a)*10);x.lineTo(Math.cos(a)*17,Math.sin(a)*17);x.stroke();if(k=='cov')circ(Math.cos(a)*18,Math.sin(a)*18,3.5,d.col)}
+  x.rotate(-t/40*v.d)}
+ if(k=='pol'){x.fillStyle=d.col;x.beginPath();x.roundRect(-14,-14,28,28,6);x.fill();x.strokeStyle='#4d5c18';x.lineWidth=3;x.strokeRect(-8,5,16,6)}
+ else if(k=='feb'){x.fillStyle='rgba(255,255,255,.85)';const f=Math.sin(t/2)*4;
+  x.beginPath();x.ellipse(-7,-13,5,9+f,-.5,0,7);x.fill();x.beginPath();x.ellipse(7,-13,5,9+f,.5,0,7);x.fill();
+  circ(0,0,13,d.col);x.fillStyle='#8a6d00';x.fillRect(-12,5,24,3);x.fillRect(-1,12,2,7)}
+ else circ(0,0,k=='sar'?14:12,d.col);
+ if(k=='sar')[[-8,-6],[7,-9],[9,5],[-6,8],[0,11]].forEach(q=>circ(q[0],q[1],2.2,'#8f1f10'));
+ circ(-4,-2,3,'#fff');circ(4,-2,3,'#fff');circ(-4+v.d,-2,1.5,'#000');circ(4+v.d,-2,1.5,'#000');
+ x.restore();
+ if(Math.abs(v.x-p.x)<280){x.font='800 13px '+F;x.textAlign='center';x.fillStyle=INK;x.fillText(d.n,v.x,v.y-38);x.textAlign='left'}}
 function draw(){
- const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,COL.sky1);g.addColorStop(1,COL.sky2);x.fillStyle=g;x.fillRect(0,0,W,H);
+ const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#bfe9e4');g.addColorStop(1,'#eefaf7');x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.textBaseline='top';
  for(let i=0;i<14;i++){const bx=((i*257-cam*.3+t*.15)%1000+1000)%1000-100,by=40+(i*83)%300;circ(bx,by,14+(i%3)*8,'rgba(255,107,87,.18)');circ(bx,by,5,'rgba(255,255,255,.5)')}
  x.save();x.translate(-Math.round(cam),0);
- for(const q of P){x.fillStyle=COL.ground;x.beginPath();x.roundRect(q[0],q[1],q[2],q[3],q[3]<30?8:0);x.fill();x.fillStyle=COL.top;x.fillRect(q[0],q[1],q[2],6)}
- // carteira de vacinação
- x.fillStyle='#fff';x.strokeStyle=COL.ink;x.lineWidth=3;x.beginPath();x.roundRect(3070,332,44,68,6);x.fill();x.stroke();
- x.fillStyle=COL.liq;x.fillRect(3070,332,44,14);x.fillStyle=COL.ink;x.fillRect(3080,356,24,3);x.fillRect(3080,364,18,3);
- x.strokeStyle='#d33';x.lineWidth=3;x.beginPath();x.arc(3092,386,8,0,7);x.stroke();
- for(const a of A){if(!a.on)continue;const b=Math.sin(t/12+a.x)*3;x.strokeStyle=COL.ab;x.lineWidth=4;x.lineCap='round';x.beginPath();x.moveTo(a.x,a.y+8+b);x.lineTo(a.x,a.y+b);x.lineTo(a.x-7,a.y-8+b);x.moveTo(a.x,a.y+b);x.lineTo(a.x+7,a.y-8+b);x.stroke()}
- for(const v of V){if(!v.on)continue;x.save();x.translate(v.x,v.y);x.rotate(t/40*v.d);x.strokeStyle=COL.vir;x.lineWidth=3;
-  for(let k=0;k<8;k++){const an=k*Math.PI/4;x.beginPath();x.moveTo(Math.cos(an)*10,Math.sin(an)*10);x.lineTo(Math.cos(an)*17,Math.sin(an)*17);x.stroke();circ(Math.cos(an)*18,Math.sin(an)*18,3,COL.vir)}
-  x.restore();circ(v.x,v.y,12,COL.vir);circ(v.x-4,v.y-2,3,'#fff');circ(v.x+4,v.y-2,3,'#fff');circ(v.x-4+v.d,v.y-2,1.5,'#000');circ(v.x+4+v.d,v.y-2,1.5,'#000')}
+ for(const q of P){x.fillStyle='#2b4a6f';x.beginPath();x.roundRect(q[0],q[1],q[2],q[3],q[3]<30?8:0);x.fill();x.fillStyle='#4fb286';x.fillRect(q[0],q[1],q[2],6)}
+ x.fillStyle='#fff';x.strokeStyle=INK;x.lineWidth=3;x.beginPath();x.roundRect(goal+10,332,44,68,6);x.fill();x.stroke();
+ x.fillStyle='#ff6b57';x.fillRect(goal+10,332,44,14);x.fillStyle=INK;x.fillRect(goal+20,356,24,3);x.fillRect(goal+20,364,18,3);
+ x.strokeStyle='#d33';x.beginPath();x.arc(goal+32,386,8,0,7);x.stroke();
+ for(const a of A){if(!a.on)continue;const b=Math.sin(t/12+a.x)*3;x.strokeStyle='#ffc233';x.lineWidth=4;x.lineCap='round';x.beginPath();x.moveTo(a.x,a.y+8+b);x.lineTo(a.x,a.y+b);x.lineTo(a.x-7,a.y-8+b);x.moveTo(a.x,a.y+b);x.lineTo(a.x+7,a.y-8+b);x.stroke()}
+ for(const it of I){const d=D[it.k],b=Math.sin(t/14)*4;circ(it.x,it.y+b,22,'rgba(255,255,255,.6)');
+  x.save();x.translate(it.x,it.y+b);x.rotate(-.7);x.fillStyle='#fff';x.strokeStyle=d.col;x.lineWidth=3;x.beginPath();x.roundRect(-5,-12,10,22,3);x.fill();x.stroke();
+  x.fillStyle=d.col;x.fillRect(-4,0,8,9);x.fillRect(-7,-14,14,3);x.fillRect(-1,10,2,8);x.restore();
+  x.font='800 14px '+F;x.textAlign='center';x.fillStyle=INK;x.fillText(d.v,it.x,it.y-46+b);x.textAlign='left'}
+ for(const v of V)if(v.on)dis(v);
  if(!(p.inv>0&&Math.floor(t/4)%2)){
-  const px=p.x,py=p.y,ph=Math.floor(t/6)%2&&Math.abs(p.vx)>.5&&p.g?3:0;
-  x.fillStyle=COL.ink;x.fillRect(px+5,py+34,7,4+ph*0);x.fillRect(px+15,py+34,7,4+(ph?-0:0));
-  x.fillStyle='#fff';x.strokeStyle=COL.ink;x.lineWidth=2.5;x.beginPath();x.roundRect(px,py+6,26,30,8);x.fill();x.stroke();
-  x.fillStyle=COL.liq;x.beginPath();x.roundRect(px+2,py+16,22,18,6);x.fill();
-  x.fillStyle=COL.ink;x.fillRect(px+9,py-6,8,4);x.fillRect(px+12,py-2,2,8);x.fillRect(px+4,py-8,18,3);
-  x.fillStyle='#fff';x.fillRect(px+10,py+20,3,3);
-  circ(px+8+p.f*2,py+24,2.6,'#fff');circ(px+18+p.f*2,py+24,2.6,'#fff');circ(px+8+p.f*3,py+24,1.2,'#000');circ(px+18+p.f*3,py+24,1.2,'#000');}
+  const px=p.x,py=p.y;
+  x.fillStyle=INK;x.fillRect(px+5,py+34,7,4);x.fillRect(px+15,py+34,7,4);
+  x.fillStyle='#fff';x.strokeStyle=INK;x.lineWidth=2.5;x.beginPath();x.roundRect(px,py+6,26,30,8);x.fill();x.stroke();
+  x.fillStyle='#ff6b57';x.beginPath();x.roundRect(px+2,py+16,22,18,6);x.fill();
+  x.fillStyle=INK;x.fillRect(px+9,py-6,8,4);x.fillRect(px+12,py-2,2,8);x.fillRect(px+4,py-8,18,3);
+  circ(px+8+p.f*2,py+24,2.6,'#fff');circ(px+18+p.f*2,py+24,2.6,'#fff');circ(px+8+p.f*3,py+24,1.2,'#000');circ(px+18+p.f*3,py+24,1.2,'#000');
+  if(p.sh){x.strokeStyle='rgba(122,63,176,.7)';x.lineWidth=3;x.beginPath();x.arc(px+13,py+18,28,0,7);x.stroke()}}
  x.restore();
- // HUD
- x.font='800 22px '+F;x.textBaseline='top';x.fillStyle=COL.ink;
- for(let i=0;i<p.hp;i++){x.fillStyle='#e0364a';x.fillText('♥',14+i*26,10)}
- x.fillStyle=COL.ink;x.textAlign='right';x.fillText('Anticorpos '+got+'/'+total,W-14,10);x.textAlign='left';
- if(mt>0&&st=='play'){mt--;x.textAlign='center';x.font='800 20px '+F;x.fillStyle=COL.ink;x.fillText(msg,W/2,50);x.textAlign='left'}
+ x.font='800 22px '+F;x.fillStyle='#e0364a';for(let i=0;i<p.hp;i++)x.fillText('♥',14+i*26,8);
+ x.fillStyle=INK;x.textAlign='right';x.fillText('Anticorpos '+got,W-14,8);x.font='800 16px '+F;x.fillText('Fase '+(lv+1)+': '+LV[lv].n,W-14,34);x.textAlign='center';
+ KEYS.forEach((k,i)=>{const d=D[k],bx=24+i*30;x.beginPath();x.arc(bx,52,11,0,7);if(have[k]){x.fillStyle=d.col;x.fill();x.fillStyle='#fff'}else{x.strokeStyle=d.col;x.lineWidth=2;x.stroke();x.fillStyle=d.col}
+  x.font='800 13px '+F;x.fillText(d.l,bx,45)});
+ if(mt>0&&st=='play'){mt--;x.font='800 20px '+F;x.fillStyle=INK;x.fillText(msg,W/2,76)}
+ x.textAlign='left';
  if(st!='play')overlay();}
-function overlay(){x.fillStyle='rgba(15,76,76,.82)';x.fillRect(0,0,W,H);x.textAlign='center';x.fillStyle='#fff';
+function overlay(){x.fillStyle='rgba(15,76,76,.86)';x.fillRect(0,0,W,H);x.textAlign='center';x.fillStyle='#fff';
  let T,L;
- if(st=='start'){T='Vacinaventura';L=['Você é a Vaci, uma dose de vacina.','Pule em cima dos vírus, colete anticorpos','e chegue à carteira de vacinação.','','Enter ou toque para começar']}
- else if(st=='lose'){T='Quase lá!';L=['Os vírus venceram esta rodada.','Você volta do último ponto de vacinação.','','Enter ou toque para tentar de novo']}
- else{T='Imunizado!';L=['Carimbo na carteira. Anticorpos: '+got+'/'+total+'.','Vacinas ensinam o corpo a se defender','antes de a doença chegar. Mantenha a sua em dia.','','Enter ou toque para jogar de novo']}
- x.font='800 54px '+F;x.fillText(T,W/2,70);x.font='500 22px '+F;L.forEach((s,i)=>x.fillText(s,W/2,150+i*32));x.textAlign='left'}
-reset(1);st='start';
+ if(st=='start'){T='Vacinaventura';L=['Você é a Vaci. Cada doença só é vencida','com a vacina certa: pegue as vacinas,','ganhe upgrades e chegue à carteira de vacinação.','Sem a vacina, o vírus machuca você!','','Enter ou toque para começar']}
+ else if(st=='lose'){T='Quase lá!';L=['As doenças venceram esta rodada.','Você volta do último ponto de vacinação.','','Enter ou toque para tentar de novo']}
+ else if(st=='lvl'){T='Fase concluída!';L=[];LV[lv].nw.forEach(k=>L.push(D[k].v+' = '+D[k].u,D[k].f));L.push('','Enter ou toque para a próxima fase')}
+ else{T='Imunizado!';L=['Todas as doenças foram derrotadas.','Anticorpos coletados: '+got+'.','Vacinas protegem você e quem está perto.','Mantenha a sua carteira em dia no posto de saúde.','','Enter ou toque para jogar de novo']}
+ x.font='800 52px '+F;x.fillText(T,W/2,50);x.font='500 20px '+F;L.forEach((q,i)=>x.fillText(q,W/2,130+i*30));x.textAlign='left'}
+startLevel();
 let last=0,acc=0;
 function loop(ts){acc+=Math.min(ts-last,100);last=ts;while(acc>=1000/60){update();acc-=1000/60}draw();requestAnimationFrame(loop)}
 requestAnimationFrame(ts=>{last=ts;loop(ts)});
